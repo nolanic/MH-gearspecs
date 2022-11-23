@@ -33,7 +33,7 @@ class ViewModelArmorList : ViewModel() {
     fun requestFullList() {
         dataRequestError = null
         isLoading = true
-        RestHelper.getArmorUnits(armorUnitsCallback)
+        RestHelper.getArmorUnits2(armorUnitsCallback)
     }
 
     override fun onCleared() {
@@ -56,6 +56,12 @@ class ViewModelArmorList : ViewModel() {
             } else {
                 dataRequestError = error
             }
+        }
+    }
+
+    private inner class  KKR :RestHelper.Callback<List<ArmorUnit>> {
+        override fun onResponse(result: List<ArmorUnit>?, error: Throwable?) {
+            Log.d("atf", "Response222222 received")
         }
     }
 }
