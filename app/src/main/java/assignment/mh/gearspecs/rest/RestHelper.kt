@@ -7,6 +7,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class RestHelper {
+    private constructor()
+
     companion object {
         private val mhwdbApi : MhwdbApi
 

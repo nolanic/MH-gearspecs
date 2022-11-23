@@ -15,6 +15,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
+import assignment.mh.gearspecs.Composables
+import assignment.mh.gearspecs.InAppMessageDispatcher
 import assignment.mh.gearspecs.R
 import assignment.mh.gearspecs.rest.models.ArmorUnit
 import assignment.mh.gearspecs.theme.Colors
@@ -31,32 +33,61 @@ class FragmentArmorList : BaseFragment() {
     @Composable
     override fun setContent() {
         Log.d("atf", "Content rendering")
-        Column {
-            Text(text = "Armor List",
-                fontSize = 30.sp,
-                color = Color.White,
-                modifier = Modifier.background(Colors.color2).padding(10.dp).fillMaxWidth(1f))
-            //Search bar
-            TextField(value = viewModel.filterText,
-                onValueChange = { viewModel.applyFilter(it)},
-                modifier = Modifier.fillMaxWidth(1f),
-                colors = TextFieldDefaults.textFieldColors(
+        if (viewModel.dataRequestError != null) {
+            //Retry data request dialog
+            Composables.StandardDialog(title = "Data Request Error", content = viewModel.dataRequestError!!.message!!,
+                cancelOnOutsideTouch = false,
+                "Retry",
+                onCancel = {
+                    InAppMessageDispatcher.broadcastMessage(Message.CLOSE_REQUESTED)
+                },
+                onButtonClick = { index ->
+                    viewModel.requestFullList()
+                }
+            )
+        }
+
+        Box(modifier = Modifier.fillMaxWidth(1f).fillMaxHeight(1f)) {
+            if (viewModel.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(50.dp).align(Alignment.Center),
+                    color = Colors.color2
+                )
+            }
+
+            Column {
+                Text(
+                    text = "Armor List",
+                    fontSize = 30.sp,
+                    color = Color.White,
+                    modifier = Modifier
+                        .background(Colors.color2)
+                        .padding(10.dp)
+                        .fillMaxWidth(1f)
+                )
+                //Search bar
+                TextField(value = viewModel.filterText,
+                    onValueChange = { viewModel.applyFilter(it) },
+                    modifier = Modifier.fillMaxWidth(1f),
+                    colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.Unspecified,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent,
-                        errorIndicatorColor = Color.Transparent),
-                textStyle = LocalTextStyle.current.copy(fontSize = 20.sp),
-                placeholder = {
-                    Text(text = "Filter Armor", fontSize = 20.sp)
-                })
-            //Armor list
-            LazyColumn {
-                Log.d("atf", "Rendering list items")
-                items(viewModel.filteredArmorUnits.size) { index ->
-                    ArmorItemUi(armorUnit = viewModel.filteredArmorUnits[index])
+                        errorIndicatorColor = Color.Transparent
+                    ),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 20.sp),
+                    placeholder = {
+                        Text(text = "Filter Armor", fontSize = 20.sp)
+                    })
+                //Armor list
+                LazyColumn {
+                    Log.d("atf", "Rendering list items")
+                    items(viewModel.filteredArmorUnits.size) { index ->
+                        ArmorItemUi(armorUnit = viewModel.filteredArmorUnits[index])
+                    }
                 }
-            }    
+            }
         }
     }
     
@@ -109,5 +140,9 @@ class FragmentArmorList : BaseFragment() {
                 }
             }
         }
+    }
+
+    enum class Message {
+        CLOSE_REQUESTED
     }
 }
