@@ -18,7 +18,6 @@ class ViewModelArmorList : ViewModel() {
     var isLoading : Boolean by mutableStateOf(false)
 
     init {
-        Log.d("atf", "View model created")
         requestFullList()
     }
 
@@ -36,19 +35,9 @@ class ViewModelArmorList : ViewModel() {
         RestHelper.getArmorUnits2(armorUnitsCallback)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("atf", "ViewModel onCleared called")
-    }
-
-    protected fun finalize() {
-        Log.d("atf", "ViewModel garbage collected")
-    }
-
     private inner class ArmorUnitsCallback : RestHelper.Callback<List<ArmorUnit>> {
 
         override fun onResponse(result: List<ArmorUnit>?, error: Throwable?) {
-            Log.d("atf", "Response received")
             isLoading = false
             if (result != null) {
                 allArmorUnits = result
@@ -56,12 +45,6 @@ class ViewModelArmorList : ViewModel() {
             } else {
                 dataRequestError = error
             }
-        }
-    }
-
-    private inner class  KKR :RestHelper.Callback<List<ArmorUnit>> {
-        override fun onResponse(result: List<ArmorUnit>?, error: Throwable?) {
-            Log.d("atf", "Response222222 received")
         }
     }
 }

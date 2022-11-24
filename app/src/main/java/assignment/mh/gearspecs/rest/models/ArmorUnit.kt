@@ -12,8 +12,12 @@ class ArmorUnit {
     val defense = Defense()
     val resistances = Resistances()
     val skills = listOf<Skill>()
-    val assets = Assets()
+    val assets : Assets? = Assets()
     val crafting = Crafting()
+
+    fun getImageUrl() : String? {
+        return assets?.imageMale
+    }
 
     fun getTypeIconResourceId() : Int {
         when(type) {
